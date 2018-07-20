@@ -1,0 +1,104 @@
+**Map
+=>맵은 클래스 처럼 여러 종류의 데이터를 하나로 묶고자 할 때 사용합니다.
+=>클래스를 사용하는 것보다 좋은 점은 저장하는 데이터의 이름을 변경할 때 편리합니다.
+이름을 사용하지 않고 모든 데이터 출력이 가능합니다.
+=>클래스에 비해 안 좋은 점은 이름을 직접 문자열로 설정을 하기 때문에 코드 센스를 사용할 수 없다는 것입니다.
+=>종류로는 HashMap, LinkedHashMap(저장한 순서대로 키 배치), TreeMap(키의 순서대로)이 있습니다.
+=>한글을 사용하는 시스템에서는 2byte로 한글을 표시하는데 영문과 숫자는 첫번째 바이트를 0으로 한 후 두번째 바이트에 ASCII  코드를 넣고 한글은 첫번째 바이트에 0이 아닌 값을 저장해서 구분합니다.
+
+00000000 00100001 - > A
+11111111 00100001 - > 가
+
+=>테이블 형식의 데이터를 만들 때는 Map 이나 Class의 List나 배열을 생성합니다.
+=>배열(List 나 Set 포함)의 배열을 만들어야 하는 경우 의미를 부여해야 한다면 일차원 배열을 포함한 Map을 만들고 이 Map을 가지고 List를 생성하는 것이 좋습니다.
+
+**Properties
+=>key 와 value를 같이 저장하는 자료구조인데 key 와 value 모두 String 만 허용합니다.
+=>String getProperty(String key): key에 해당하는 값을 리턴하는 메소드
+=>void setProperty(String key, String value): key에 value를 저장하는 메소드로 동일한 key에 데이터가 저장되어 있으면 수정합니다.
+
+**Collections 클래스
+=>List, Set, Map 인스턴스를 변경을 불가능하게 만들거나 동시에 수정할 수 없도록 만들어주는 메소드를 소유한 클래스
+=>모든 메소드가 static 이므로 직접 인스턴스 생성할 필요가 없습니다.
+=>synchronized가 붙는 메소드가 동시에 수정할 수 없는 데이터 모임을 만들어주는 메소드이고 unmodifiable 이 붙는 메소드가 변경이 불가능한 데이터 모임을 만들어주는 메소드입니다.
+
+**Random
+=>랜덤한 숫자를 만들기 위해서 사용하는 클래스
+=>게임이나 많은 양의 데이터에서 랜덤한 샘플을 가져올 때 사용
+
+**StringTokenizer
+=>문자열을 분할해주는 클래스
+=>String 클래스의 split이라는 메소드가 하는 역할과 유사한 역할을 수행하는데 split은 배열로 리턴하고 StringTokenizer는 Enumeration으로 리턴
+
+**java.util.Date
+=>날짜와 시간에 관련된 클래스
+=>데이터베이스의 날짜와 연동할 때 사용할 수 있는 클래스
+=>1970년 1월 1일 자정(Epoch Time)이후 부터 지나온 시간을 1/1000초 단위의 정수로 가지고 있다가 년월일시분초로 변환해서 출력하는 클래스
+
+1.생성자
+Date(): 현재 시간으로 초기화 됩니다.
+Date(long timeInMillis): 1970년 1월 1일 자정 이후에 지나온 시간을 기준으로 초기화
+
+2.메소드
+toString():년월일시분초를 분할해서 문자열로 만들어서 리턴
+
+**java.util.Calendar
+=>날짜와 시간을 가지는 클래스
+=>Date 보다 정확하게 날짜 와 시간을 저장합니다.
+=>이 클래스를 상속받은 클래스로 GregorianCalendar, BuddistCalendar 클래스가 있습니다.
+
+1.인스턴스 생성
+static 메소드인 getInstance()를 이용합니다.
+현재 시간으로 초기화 됩니다.
+
+2.1970년 1월 1일 자정으로 부터 지나온 시간을 1/1000초 단위의 정수로 가져오는 메소드로 getTimeInMillis()가 있습니다.
+
+3.년월일시분초 등을 설정하거나 가져올 때는 get(Calendar 상수) 그리고 set(Calendar상수, 데이터)를 호출하면 됩니다.
+
+4.Date 와의 변환
+1)Calendar 객체를 가지고 Date 객체 만들기
+new Date(Calendar객체.getTimeInMillis())
+
+2.Date 객체를 가지고 Calendar 객체 만들기
+Calendar객체.setTime(Date 객체)
+
+**날짜를 가지고 가장 많이 하는 작업
+날짜를 저장해서 출력하는 것과 날짜 사이의 차이를 구하는 것입니다.
+
+**문자열 포맷 클래스 - java.text 패키지에 존재
+1.SimpleDateFormat
+=>Date 객체의 날짜를 원하는 형식의 문자열로 만들어주는 클래스
+SimpleDateFormat 변수명 = new SimpleDateFormat("날짜 및 시간 서식");
+String 문자열변수 = 변수명.format(Date 객체);
+
+2.DecimalFormat
+=>숫자를 원하는 형식의 문자열로 만들어주는 것으로 SimpleDateFormat과 사용법이 동일합니다.
+0: 없으면 0으로 채우기
+#: 없으면 없는대로 
+,: 천단위 구분 기호
+%: 백분율
+\u00A4: 통화기호
+
+**java.util.Scanner
+=>파일이나 문자열 또는 InputStream으로부터 입력을 받는 클래스
+=>키보드로부터 입력받을 때는 System.in을 대입해서 인스턴스를 생성하면 됩니다.
+=>입력받는 메소드는 next(), nextInt(), nextDouble() 등이 있는데 이 메소드들은 공백이나 탭 또는 엔터가 올 때 까지 입력을 받습니다.
+변경할 수 없는 자료형의 데이터가 오면 예외를 발생시킵니다.
+=>nextLine은 한 줄의 문자열을 입력받는 메소드
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

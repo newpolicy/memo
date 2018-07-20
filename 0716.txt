@@ -1,0 +1,293 @@
+**스레드
+1.스레드 생성
+1)Thread 클래스로부터 상속받는 클래스를 만들고 run 메소드에 스레드로 수행할 내용을 작성하고 인스턴스를 생성하고 start()를 호출하면 됩니다.
+
+2)Runnable 인터페이스를 implements 한 클래스를 만들고 run 메소드에 스레드로 수행할 내용을 작성하고 인스턴스를 생성하고 Thread 클래스의 생성자에 인스턴스를 대입해서 Thread 인스턴스를 생성한 후 start()를 호출합니다.
+
+2.데몬 스레드
+=>백그라운드에서 동작해서 다른 스레드의 수행을 돕는 스레드
+=>setDaemon 이라는 메소드에 true를 대입해서 생성
+=>다른 스레드가 동작 중이 아니면 자동으로 종료됩니다.
+
+3.스레드의 강제 종료
+=>스레드 클래스의 run 메소드에 InterrupteException이 발생했을 때 return 하는 코드를 추가합니다.
+=>스레드 인스턴스에서 interrupt()를 호출하면 됩니다.
+
+4.멀티 스레드를 사용할 때 고려 사항
+=>공유 자원의 문제를 고민해야 합니다.
+=>공유 자원을 동시에 수정하는 문제나 순차적으로 사용해야 하는 경우들을 고려해야 합니다.
+1)critical section(임계 영역)
+=>공유 자원을 사용하는 코드 영역
+
+2)mutual exclusion(상호배제)
+=>하나의 스레드가 사용 중인 공유자원은 다른 스레드가 수정하면 안된다.
+=>java 에서는 synchronized 메소드를 만들거나 synchronized 블럭을 만들어서 해결합니다.
+
+3)consumer problem(생산자와 소비자 문제)
+=>생산자와 소비자는 자원을 공유해서 사용할 수 있지만 소비자는 생산자가 자원을 생성해 준 경우에만 사용할 수 있습니다.
+synchronized 메소드와 wait, notify, notifyAll 메소드로 해결
+
+ex1)
+잔액이라는 변수와 잔액에서 100을 감소시키는 메소드를 가지는 클래스를 생성 - 공유 자원
+
+public class Bank {
+	//잔액을 저장할 변수
+	private int balance = 1000;
+	
+	//잔액을 변경하는 메소드
+	public void job(String msg) {
+		System.out.print(msg + " 현재 잔액:" 
+				+ balance);
+		balance = balance - 100;
+		//1초 대기
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.print(msg + "작업 후 현재 잔액:" 
+				+ balance);
+	}
+}
+
+
+스레드 클래스를 만들어서 앞에서 만든 클래스의 메소드를 5번 호출하는 작업을 스레드로 진행하는 클래스를 생성
+
+public class ThreadEx2 extends Thread {
+	private Bank bank;
+	private String name;
+	
+	//생성자에서 Bank 와 문자열 1개를 대입받기
+	public ThreadEx2(Bank bank, String name) {
+		this.bank = bank;
+		this.name = name;
+	}
+	
+	//스레드로 동작할 메소드
+	public void run() {
+		//bank의 메소드를 3번 호출
+		for(int i=0; i<3; i=i+1) {
+			bank.job(name);
+		}
+	}
+}
+
+Main에서 2개의 스레드를 만들어서 실행
+public class MutexMain {
+
+	public static void main(String[] args) {
+		Bank bank = new Bank();
+		//스레드 인스턴스 만들기
+		ThreadEx2 atm = 
+			new ThreadEx2(bank, "ATM");
+		atm.start();
+		ThreadEx2 internet = 
+			new ThreadEx2(bank, "internet");
+		internet.start();
+
+	}
+
+}
+
+
+=>이 상태에서 실행하면 ATM 스레드가 작업하고 있는 도중에 internet 스레드가 작업을 수행해서 결과가 이상하게 나옵니다.
+작업 전 잔액과 작업 후 잔액의 차이가 100이 되어야 하는데 200이 나는 경우가 발생합니다.
+이런 경우에는 작업 내에서 공유 자원을 사용하는 부분은 한번에 수행되도록 해주어야 합니다.
+
+Bank 클래스의 job 메소드 수정
+
+public void job(String msg) {
+		//this-내 자신의 자원을 사용하는 경우
+		//이 코드는 한 번에 수행되도록 설정
+		synchronized (this) {
+			System.out.println(msg + " 현재 잔액:" + balance);
+			balance = balance - 100;
+			// 1초 대기
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(msg + "작업 후 현재 잔액:" + balance);
+		}
+	}
+
+ex2)생산자와 소비자 문제를 해결
+=>생산자는 물건을 저장하고 소비자는 물건을 사용
+=>생산자가 물건을 생산해 주었을 때만 소비자는 물건을 사용
+=>물건이 없을 때는 소비자는 대기해야 합니다.
+=>생산자는 물건을 생산해주고 나면 소비자에게 알려 주어야 합니다.
+
+잔액을 가지고 잔액을 추가하는 메소드와 잔액을 감소시키는 메소드를 소유한 공유 자원 클래스
+public class Account {
+	private int balance;
+
+	// 잔액을 추가하는 메소드
+	public void save() {
+		System.out.println("입금 전 잔액:" + balance);
+		balance = balance + 1000;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("입금 후 잔액:" + balance);
+
+	}
+
+	// 잔액을 감소시키는 메소드
+	public void depo() {
+		System.out.println("출금 전 잔액:" + balance);
+		balance = balance - 1000;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("출금 후 잔액:" + balance);
+
+	}
+}
+
+앞에서 만든 클래스의 save 메소드를 5번 호출하는 스레드 클래스
+public class ThreadEx3 extends Thread {
+	private Account account;
+	
+	public ThreadEx3(Account account) {
+		this.account = account;
+	}
+	
+	public void run() {
+		for(int i=0; i<5; i=i+1) {
+			account.save();
+		}
+	}
+}
+
+앞에서 만든 클래스의 depo 메소드를 5번 호출하는 스레드 클래스
+
+public class ThreadEx4 extends Thread {
+	private Account account;
+	
+	public ThreadEx4(Account account) {
+		this.account = account;
+	}
+	
+	public void run() {
+		for(int i=0; i<5; i=i+1) {
+			account.depo();
+		}
+	}
+}
+
+메인 클래스 - 스레드 클래스의 인스턴스를 만들어서 스레드 시작
+public class ConsumerMain {
+
+	public static void main(String[] args) {
+		Account account = new Account();
+		
+		ThreadEx3 th1 = new ThreadEx3(account);
+		th1.start();
+		
+		ThreadEx4 th2 = new ThreadEx4(account);
+		th2.start();
+
+	}
+
+}
+
+=>잔액이 없는데도 잔액을 감소시키는 메소드가 수행이 되서 잔액이 음수가 되는 현상이 발생합니다.
+잔액이 1000보다 작을 때는 잔액을 감소시키는 일을 못하게 해야 하고 잔액을 증가시켰으면 잔액을 감소시키는 일을 할 수 있도록 알려주어야 합니다.
+
+
+**Java에서 GUI(Graphic User Interface - 윈도우즈) 프로그램을 하는 방법
+
+1.AWT: 운영체제의 자원을 빌려서 사용
+느리고 무겁기 때문에 잘 사용하지 않음
+Swing 이나 Android의 기반이 되기 때문에 주로 학습용으로 사용
+
+2.Swing: JVM의 자원을 이용해서 사용
+AWT 보다는 가벼움
+AWT 보다 다양한 컴포넌트를 지원
+AWT 와 동일한 방식으로 프로그래밍
+
+3.Java FX
+가장 최근에 지원하기 시작한 GUI 프로그래밍
+다양한 UI를 제공
+Swing 보다는 프로그래밍 하기가 까다로움
+
+**AWT
+1.Frame
+=>하나의 윈도우에 해당하는 클래스
+=>이 클래스의 인스턴스를 만들면 하나의 윈도우가 만들어집니다.
+=>기본적으로 좌표는 0,0 이고 크기는 0,0 이며 화면이 보이지 않도록 설정되어 있습니다.
+=>크기와 화면 출력 설정을 해주어야 합니다.
+=>Frame을 상속받은 클래스를 만들고 이 클래스의 생성자에서 기본 설정을 하고 Main 에서 인스턴스를 생성해서 화면에 출력하는 형식을 따릅니다.
+
+2.Panel
+=>여러 개의 Component 들을 하나로 묶어주기 위해 사용하는 컨테이너
+=>독자적으로 출력을 할 수 없기 때문에 Frame 이나 다른 Panel의 위에 배치되서 화면에 출력됩니다.
+=>컴포넌트 위에 배치할 때는 add(배치할 컴포넌트) 메소드를 이용합니다.
+
+3.Dialog(대화상자)
+1)종류
+=>Model Dialog: 대화상자가 출력되면 다른 컴포넌트에게 제어권을 옮길 수 없는 형식으로 코드 실행도 중단됩니다.
+대화상자를 화면에서 제거해야만 다른 컴포넌트를 사용할 수 있고 코드도 수행됩니다.
+
+=>Modeless Dialog: 대화상자가 출력된 상태에서도 다른 컴포넌트에게 제어권을 옮길 수 있는 형식의 다이얼로그
+
+2)대화상자를 생성할 때는 생성자의 첫번째 매개변수에 자신의 부모 컴포넌트의 주소를 대입해야 합니다.
+
+4.Button
+=>마우스로 클릭해서 작업을 수행하는 컴포넌트
+
+5.Checkbox
+=>체크 박스와 라디오 버튼을 만들 수 있는 클래스
+=>체크 박스는 하나도 선택하지 않을 수 있고 여러 개를 선택할 수도 있습니다.
+=>라디오 버튼은 반드시 1개를 선택해야 할 때 사용합니다.
+=>라디오 버튼을 만들 때는 디폴트를 설정해 주어야 합니다.
+=>만들 때 생성자의 두번째 매개변수로 CheckboxGroup 인스턴스를 대입하면 라디오 버튼이 됩니다.
+
+6.Choice
+=>ComboBox
+=>여러 개의 항목 중 하나의 항목만 선택하도록 하고자 할 때 사용하는 Component로 RadioButton과 유사한 역할을 하는 Component
+
+7.Label
+=>텍스트를 출력하기 위한 Component
+
+8.List
+=>여러 개의 항목을 보여주고 그 중 하나 또는 여러 개를 선택할 수 있도록 해주는 Component
+
+=>스레드를 만들어서 실행
+    anonymous class 로 만들어서 실행
+
+=>Frame을 이용해서 윈도우 화면을 만들고 출력
+Button, Label, Checkbox, RadioButton(Checkbox), ComboBox(Choice), ListBox(List)의 용도
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

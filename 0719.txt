@@ -1,0 +1,151 @@
+**Object 클래스
+=>java의 최상위 클래스
+=>java의 모든 클래스는 Object 클래스를 상속합니다.
+=>Object 타입의 변수에는 어떤 종류의 데이터든 대입할 수 있습니다.
+=>Object 타입에 대입된 데이터는 출력을 할 때는 제외하고 항상 원래의 자료형으로 형변환을 해서 사용해야 합니다.
+=>Object 클래스에는 toString 메소드가 만들어져 있는데 이 메소드는 클래스이름@해시코드 를 문자열로 리턴하도록 되어 있습니다.
+=>출력하는 메소드(print, println, printf)에 인스턴스 이름을 대입하면 toString 의 결과를 출력합니다.
+
+**Swing
+1.javax.swing.JList
+=>여러 개의 항목을 출력하고 그 중 여러 개의 항목을 선택할 수 있도록 해주는 컴포넌트
+=>데이터 없이 생성할 수 있고 Generic을 이용해서 배열을 이용해서 생성할 수 있고 Vector를 이용해서 생성할 수 있습니다.
+
+2.javax.swing.JTable
+=>행과 열로 구성된 데이터를 출력하기 위한 스윙의 컴포넌트
+1)MVC(Model View Controller)
+=>Model: 데이터를 만드는 부분
+=>View: 데이터를 출력하는 부분
+=>Controller: Model 과 View를 연결 시켜 주는 부분
+=>MVC Pattern: 역할 별로 별도로 구현해서 어느 한 부분에 변화가 생기더라도 다른 부분을 수정하지 않아도 되도록 구현하는 패턴
+Model에 변화가 생기더라도 View를 수정할 필요가 없도록 하는 패턴
+
+2)Swing의 JTable은 데이터를 만드는 TableModel 과 화면 출력을 위한 JTable을 별도로 구현해서 연결하는 방식을 취합니다.
+데이터의 수정과 삭제는 TableModel을 이용하고 화면 출력은 JTable을 이용합니다.
+TableModel에서 데이터를 수정하고 JTable에서 UpdateUI 메소드만 호출하면 변경된 내용이 JTable에 적용되서 출력이 되는 구조입니다.
+
+3)JTable은 JScollPane 위에 배치해야 출력 영역 크기를 벗어나게 되면 스크롤 바를 만들어 줍니다.
+
+4)데이터는 컬럼이름을 나타내는 1차원 배열 또는 Vector 와 셀에 보여질 데이터를 나타내는 2차원 배열 또는 Vector의 Vector가 있어야 합니다.
+이 2가지 배열이나 Vector를 이용해서 TableModel을 만들고 이 Model을 JTable의 생성자에 대입하거나 setModel 메소드에 대입해서 연결시킵니다.
+편집하기 위해서 가져올 때는 getModel 메소드를 이용합니다.
+
+ex1) 테이블에 데이터 출력(이름, 전화번호, 주소를 출력)
+1_1.윈도우 클래스
+public class AddressBook extends JFrame {
+	//컬럼 이름 배열
+	String [] columns = {
+			"이름", "전화번호", "주소"
+	};
+	//데이터 배열
+	String [][] data = {
+			{"박문석", "01037901997", 
+				"서울시 양천구 목동"},
+			{"제시카", "01031391997",
+				"뉴질랜드 크라이스처치"},
+			{"헌트", "01031381997",
+				"영국 런던"
+			},
+			{"브라이언", "전화없음",
+				"뉴질랜드 크라이스처치"
+			}
+	};
+	
+	public AddressBook() {
+		setBounds(100, 100, 400, 400);
+		setTitle("연락처");
+		setDefaultCloseOperation(
+				EXIT_ON_CLOSE);
+		
+		//테이블 모델 만들기
+		DefaultTableModel model = 
+			new DefaultTableModel(data, columns);
+		//테이블 모델을 이용해서 테이블을 만들기
+		JTable table = new JTable(model);
+		//table.setModel(model);
+		//출력 영역의 크기보다 table이 커지더라도
+		//스크롤 바를 이용할 수 있도록 Scroll을 생성
+		JScrollPane scrollPane = 
+			new JScrollPane(table);
+		//스크롤 패인을 프레임에 부착
+		add(scrollPane);
+				
+		setVisible(true);
+	}
+}
+
+1_2.Main 클래스
+public class SwingMain {
+
+	public static void main(String[] args) {
+		//new MyWindow1();
+		new AddressBook();
+
+	}
+
+}
+
+3.JOptionPane
+=>미리 만들어 둔 대화상자입니다.
+=>메시지를 출력하는 대화상자, 예-아니오 와 같은 버튼을 선택하는 대화상자, 한 줄의 텍스트를 입력받는 대화상자가 있습니다.
+=>static 메소드인 showMessageDialog, showConfirmDialog, showInputDialog 를 호출해서 화면에 출력합니다.
+=>3가지 메소드 모두 3번째 매개변수까지는 동일한데 부모의 주소, 타이틀, 메시지 입니다.
+=>4번째 매개변수가 달라지게 되는데 MessageDialog는 아이콘 모양을 설정해야 하고 ConfirmDialog는 버튼모양을 설정해야 하고 InputDialog는 YES_NO를 설정합니다.
+=>MessageDialog는 리턴하지 않고 ConfirmDialog는 누른 버튼 값을 정수로 리턴하고 InputDialog는 예를 누르면 입력한 텍스트를 String으로 리턴하고 아니오를 누르면 null을 리턴합니다.
+
+4.Common Dialog
+=>GUI 프로그램을 할 때 자주 사용하는 기능의 대화상자를 미리 만들어서 제공
+=>Swing에서는 파일을 선택하고 저장할 수 있는 JFileChooser 와 색상을 선택할 수 있는 JColorChooser를 제공합니다.
+
+5.Menu
+=>메뉴는 프로그램의 상단에 고정적으로 부착되는 메뉴와 화면에 떠나니는 메뉴(Popup Menu)로 구분합니다.
+=>JMenuBar, JMenu, JMenuItem(체크박스와 라디오 버튼 메뉴 아이템도 있음)으로 구성
+=>JMenu 와 JMenuItem은 setMnemonic(int key)를 이용해서 ALT + key 로 단축키 를 만들 수 있습니다.
+
+1)상단 메뉴
+=>JMenuBar을 만들어서 Frame 에 부착
+=>JMenu를 만들어서 JMenuBar 나 JMenu에 부착
+=>JMenuItem을 만들어서 JMenu에 부착
+
+2)JPopupMenu
+=>JPopupMenu 인스턴스를 만들고 메뉴를 추가하게 되는 Menu를 여러 개의 컬럼으로 만들지는 못합니다.
+=>출력할 때는 show(부모윈도우, x좌표, y좌표)를 호출하면 됩니다.
+
+**Swing의 이벤트 처리는 AWT 와 동일합니다.
+**String 의 메소드
+int length(): 문자열의 길이를 리턴하는 메소드
+char charAt(int idx): idx 번째 문자를 리턴
+String trim(): 좌우 공백을 제거
+**데이터 작업을 할 때는 유효성 검사를 하고 작업을 수행해야 합니다.
+유효성 검사를 하지 않으면 올바르지 않은 데이터가 삽입되거나 예외가 발생해서 프로그램이 중단 될 수 있습니다.
+작업을 완료하거 실패나면 작업에 대한 완료나 실패 메시지를 출력해주는 것이 좋습니다.
+이 때 메시지는 친절하게 길게 작성하는 것이 좋습니다.
+
+
+**java.io.File 
+=>파일에 대한 정보를 가지고 있고 파일에 대한 작업을 수행할 수 있는 클래스
+1.생성자
+File(String 파일의 전체 경로)
+File(String 디렉토리 경로, String 파일 이름)
+File(File 디렉토리, String 파일이름)
+
+2.주요 메소드
+1)boolean exists(): 파일의 존재 여부를 리턴
+2)long length(): 파일의 길이를 리턴
+3)long lastModified(): 파일의 최후 수정 시간을 1/1000초 단위의 정수로 리턴
+
+=>파일을 다운로드 해야 하는 프로그램을 만들 때 파일의 존재여부를 확인해서 다운로드 해주어야 하고 이미 존재하는 파일이 업데이트 되서 다운로드 해 줄 때는 최후 수정시간이나 길이를 확인해서 다운로드 해주어야 합니다.
+되도록이면 파일 다운로드는 스레드를 이용해서 해 주는 것이 좋습니다. 
+
+
+
+
+
+
+
+
+
+
+
+
+

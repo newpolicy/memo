@@ -1,0 +1,234 @@
+**상속(Inheritance)
+=>상위 클래스의 모든 멤버를 하위 클래스가 물려 받는 것
+1.하는 이유
+=>중복된 코드를 제거해서 코드를 간결하게 만들고 유지보수를 편리하게 하기 위해서
+=>기존에 제공된 기능에 내용을 추가하고자 해서
+
+2.하는 방법 - 오늘 제일 중요
+클래스 이름 뒤에 extends를 쓰고 상위 클래스 이름을 적어주면 됩니다.
+
+3.private 멤버는 상속은 되는데 하위 클래스에서 접근을 할 수 없습니다.
+하위 클래스에서 접근하도록 하기 위해서는 접근 지정자를 protected 나 public으로 변경해야 합니다.
+
+4.상위 클래스와 하위 클래스에 동일한 이름의 인스턴스 변수를 만들 수는 있지만 이 경우 하위 클래스에서는 상위 클래스의 변수에 접근할 수 없기 때문에 의미가 없습니다.
+
+**super
+1.super
+=>하위 클래스에서 상위클래스의 멤버를 사용하기 위해서 붙이는 지시자
+=>상위 클래스와 하위 클래스에 동일한 이름의 변수나 메소드가 존재하는 경우 하위 클래스에서 이름만 사용하면 자신의 변수나 메소드만 사용가능합니다.
+=>이런 경우 super.을 이용하면 상위 클래스의 변수나 메소드를 사용할 수 있습니다.
+
+2.super(매개변수)
+=>하위 클래스의 생성자에서 상위 클래스의 생성자를 호출하는 구문
+=>다른 클래스로부터 상속을 받으면 생성자의 첫번째 라인에 상위 클래스의 디폴트 생성자를 호출하는 구문이 자동으로 삽입됩니다.
+=>상위 클래스에 디폴트 생성자가 없으면 상속을 받으면 에러가 발생하게 됩니다.
+하위 클래스에서는 상위 클래스의 디폴트 생성자를 호출하는 구문이 있기 때문입니다.
+이런 경우에는 하위 클래스에 생성자를 만들고 첫번째 라인에서 super()를 이용해서 상위 클래스의 생성자를 직접 호출해 주어야 합니다.
+
+**Method Overriding(재정의 - 중요)
+=>상속관계에 있는 클래스에 동일한 원형의 메소드가 존재하는 경우
+=>메소드 원형: 메소드 이름과 매개변수의 자료형 과 개수
+
+**참조형 변수 간의 대입 - 객체 지향 언어에서 가장 중요
+=>변수를 선언할 때 사용한 자료형의 데이터만 대입이 가능
+=>객체 지향 언어에서는 예외적으로 상위 클래스 타입의 변수에 하위 클래스 타입의 인스턴스 주소를 형 변환 없이 대입할 수 있습니다.
+=>상위 클래스 타입이 원하는 모든 것을 하위 클래스 타입의 인스턴스는 줄 수 있기 때문입니다.
+=>하위 클래스 타입의 변수에 상위 클래스 타입의 인스턴스 주소를 대입할 때는 강제 형 변환을 해야하고 결과는 프로그래머가 책임져야 합니다.
+
+**polymorphism(다형성)
+=>동일한 메시지에 대하여 다르게 반응하는 성질
+=>동일한 코드가 어떤 객체가 대입되었는지에 따라서 다른 메소드를 호출하는 것
+=>참조형 사이의 대입과 overriding을 이용해서 구현합니다.
+=>참조형 변수는 변수를 선언할 때 사용한 자료형을 가지고 자신의 멤버를 호출하는데 예외적으로 overriding 된 메소드는 선언할 때 사용한 자료형을 가지고 호출하는 것이 아니고 대입될 때 사용한 자료형을 가지고 멤버를 호출합니다.
+
+**객체 지향의 3대 특징
+1.캡슐화(Encapsulation): 하나의 목적을 달성하기 위한 변수와 메소드를 하나로 묶는 것
+=>클래스 만드는 것
+
+2.상속성(Inheritance): 상위 클래스의 모든 것을 하위 클래스가 물려받는 것
+
+3.다형성(Polymorphism): 하나의 메시지(코드)에 대하여 다르게 반응하는 성질(다른 메소드 호출)
+
+*다른 객체 지향 언어를 공부할 때 배열까지는 다시 보지 말고 클래스를 만드는 것 과 상속을 하는 방법 그리고 다형성을 구현하는 방법만 공부하면 됩니다.
+
+**다형성 구현해보기
+1.Terran, Zerg, Protoss 클래스를 생성합니다.
+public class Terran {
+	//공격하는 메소드
+	public void attack() {
+		System.out.println("테란의 공격");
+	}
+}
+
+public class Zerg {
+	//공격하는 메소드
+	public void offence() {
+		System.out.println("저그의 공격");
+	}
+}
+
+public class Protoss {
+	//공격하는 메소드
+	public void attack() {
+		System.out.println("프로토스의 공격");
+	}
+}
+
+2.Main 클래스를 생성해서 위 3개 클래스의 공격하는 메소드를 호출
+public class Main {
+
+	public static void main(String[] args) {
+		//3개 클래스의 공격하는 메소드를 호출해보기
+		Terran t = new Terran();
+		t.attack();
+		Zerg z = new Zerg();
+		z.offence();
+		Protoss p = new Protoss();
+		p.attack();
+	}
+}
+
+=>유사한 역할을 하는 메소드들의 이름이 서로 다르면 기억해야 할 메소드의 개수가 늘어납니다.
+=>유사한 역할을 수행하는 메소드들의 이름은 서로 동일한게 좋습니다.
+
+3.Zerg 클래스의 공격하는 메소드의 이름을 수정
+public class Zerg {
+	//공격하는 메소드
+	public void attack() {
+		System.out.println("저그의 공격");
+	}
+}
+
+4.Main도 수정
+public class Main {
+	public static void main(String[] args) {
+		//3개 클래스의 공격하는 메소드를 호출해보기
+		Terran t = new Terran();
+		t.attack();
+		Zerg z = new Zerg();
+		z.attack();
+		Protoss p = new Protoss();
+		p.attack();
+	}
+}
+
+=>Terran 과 Zerg 와 Protoss 클래스 들 간에 아무런 관계도 없어서 세개의 변수를 만들어서 메소드를 호출했습니다.
+=>상위 클래스 타입의 변수에 하위 클래스 타입의 인스턴스 주소를 대입할 수 있는 문법을 이용하면 하나의 변수에 3개 클래스의 인스턴스 주소를 대입할 수 있습니다.
+
+5.3개 클래스의 상위 클래스가 될 Starcraft 클래스를 생성
+public class Starcraft {
+
+}
+
+6.3개 클래스에 Starcraft 클래스를 상속
+public class Protoss extends Starcraft
+
+public class Terran extends Starcraft
+
+public class Zerg extends Starcraft
+
+7.Main 클래스도 수정
+public class Main {
+
+	public static void main(String[] args) {
+		//3개 클래스의 공격하는 메소드를 호출해보기
+		Starcraft star = new Terran();
+		star.attack();
+		
+		star = new Zerg();
+		star.attack();
+		
+		star = new Protoss();
+		star.attack();
+
+	}
+
+}
+
+=>하나의 변수를 가지고 3개의 인스턴스를 전부 대입받을 수는 있지만 메소드 호출은 안됩니다.
+=>변수는 오버라이딩된 메소드만 하위 클래스의 것을 호출할 수 있기 때문입니다.
+=>오버라이딩을 만들어주기 위해서 Starcraft 클래스에 attack()을 추가
+
+8.Starcraft 클래스 수정
+public class Starcraft {
+	//오버라이딩 관계를 만들기 위한 메소드
+	public void attack() {}
+}
+
+=>이렇게 만들면 Main을 제외한 클래스들은 복잡해지지만 Main 클래스는 간결해집니다.
+=>Main 클래스는 유저가 사용하는 클래스이고 나머지 클래스는 보조적인 역할을 수행하는 클래스입니다.
+=>Main이 간결해지면 유저는 편리해지고 개발자는 피곤해집니다.
+
+**Git-Hub 에 Eclipse 소스 코드 업로드 하기
+1.www.github.xom에서 회원가입을 하고 이메일 인증을 합니다.
+한번만 하면 됩니다.
+
+2.https://www.git-scm.com 에 접속해서 git 프로그램을 컴퓨터에서 설치
+
+3.자신의 컴퓨터에 깃허브 아이디를 등록 - cmd 창에서 수행
+git config --global user.name 이름
+git config --global user.email 이메일
+
+=>2번과 3번은 컴퓨터에서 1번만 수행합니다.
+
+4.github.com에 로그인을 해서 repository를 생성
+=>initialize를 해야 합니다.
+ 
+5.Eclipse에서 perspective를 git으로 변경
+
+6.왼쪽 화면에서 Clone a Git repository를 클릭
+
+7.github.com에 가서 새로 만든 repository의 주소를 복사합니다.
+
+8.Eclipse 창의 URI에 붙여넣기를 합니다.
+아이디와 비밀번호를 입력합니다.
+next 와 finish를 클릭합니다.
+
+=>Eclipse 와 repository가 연결 된 것입니다.
+
+9.perspective를 java로 변경을 합니다.
+
+10.업로드 할 프로젝트를 선택하고 마우스 오른쪽을 클릭해서 [Team] - [Share Project]를 선택
+
+11.repository를 클릭해서 앞에서 생성한 repository를 선택
+
+12.마우스 오른쪽을 클릭하고 [Team] - [Commit]을 클릭
+
+13.staged changes에 있는 것이 업로드 되므로 아무것도 없으면 위의 창에서 파일들을 드래그
+
+14.commit message 작성
+
+15.commit and push 버튼을 클릭
+
+16.로그인 창에 이름과 비밀번호 입력
+
+=>수정한 후 업로드를 할 때는 12번부터 다시 수행
+=>변경된 내용을 다운로드 받고자 하는 경우에는 [Team] - [pull] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

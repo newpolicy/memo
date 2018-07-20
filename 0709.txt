@@ -1,0 +1,112 @@
+**java.lang.System
+public final class System extends Object
+=>Object 클래스로부터 상속받았고 상속할 수 없는(final) 클래스
+
+=>시스템 관련 클래스
+
+1.Field Summary
+1)err: 표준 에러 스트림 - 이 필드를 이용해서 print를 호출하면 빨간색으로 콘솔창에 출력됩니다.
+
+2)in: 표준 입력 스트림 - 표준 입력 장치를 가리키는 필드
+보통은 키보드입니다.
+
+3)out: 표준 출력 스트림 - 표준 출력 장치를 가리키는 필드
+보통은 모니터입니다.
+
+2.Constructor(생성자) 가 없습니다.
+=>모든 메소드가 static이기 때문에 인스턴스를 생성할 필요가 없어서 private으로 숨겨두었습니다.
+
+3.주요 메소드
+static long currentTimeMillis(): 현재 시간을 1/1000초 단위의 정수로 리턴해주는 메소드입니다.
+1970년 1월 1일 자정 이후 지나온 시간 : epoch time
+
+static void exit(int status): JVM 종료 하는 메소드 - 자바 프로그램 종료
+매개변수로 대입하는 정수는 시스템 오류 코드입니다.
+0이면 정상 종료
+
+static String getEnv(생략하거나 환경변수이름): 환경 변수 값 가져오기 
+static String getProperty(프로퍼티 이름): 프로퍼티 이름에 해당하는 속성 값 가져오기 - os.name, user.name, user.home, java.home, java.version
+
+=>Hello World를 100만번 출력하는데 걸리는 시간을 측정해서 출력
+    자신의 자바 버전을 출력
+    path 환경변수의 값을 출력
+
+public class Main1 {
+
+	public static void main(String[] args) {
+		//HelloWorld 100만번 출력하는 시간 측정하기
+		long start = System.currentTimeMillis();
+		
+		for(int i=0; i<1000000; i=i+1) {
+			System.out.println("Hello World");
+		}
+		
+		long end = System.currentTimeMillis();
+		System.out.println("작업시간:" + (end-start));
+		
+		//환경변수 확인
+		System.out.println(System.getenv("path"));
+		//시스템 속성 확인
+		System.out.println(System.getProperty("java.version"));
+	}
+
+}
+
+
+**java.lang.Class
+=>클래스에 대한 정보를 저장한 클래스
+=>인스턴스의 getClass()를 호출하면 Class 타입의 인스턴스를 리턴합니다.
+
+**java.lang.Math
+=>수학 관련 클래스
+=>모든 멤버가 static이라서 인스턴스 생성이 필요 없기 때문에 생성자는 private으로 숨겨져 있습니다.
+=>운영체제 별로 다르게 동작하는데 이에 대한 보완으로 StrictMath라는  클래스를 제공합니다.
+=>PI라는 field 와 random()이라는 메소드를 자주 사용합니다.
+
+**java.lang.Runtime
+=>프로세스 실행과 관련된 클래스
+=>생성자가 private 입니다.
+=>추상 클래스도 아니고 모든 멤버가 static도 아닙니다.
+=>이 클래스의 인스턴스는 getRuntime()이라는 static 메소드로 생성합니다.
+=>인스턴스 생성을 자신의 생성자를 이용하지 않고 static 메소드로 만드는 경우는 싱글톤 패턴의 클래스입니다.
+=>싱글톤 패턴은 인스턴스를 1개만 생성하는 클래스입니다.
+=>exec("프로그램이름 매개변수")
+프로그램을 매개변수와 함께 실행합니다.
+매개변수를 대입하지 않으면 프로그램만 실행됩니다.
+
+**어떤 클래스의 Constructor 가 없는데 static이 아닌 메소드가 존재하는 경우 자기 자신을 리턴하는 static 메소드가 있는지 확인해야 합니다.
+만약 없다면 클래스이름Factory 클래스가 있는지 확인해야 합니다.
+
+**String 클래스
+=>변하지 않는 문자열을 저장하는 클래스
+1.인스턴스 생성
+1)문자열 상수 대입: "Hello"
+2)디폴트 생성자: new String()
+3)문자열을 대입해서 생성하는 생성자: new String("문자열")
+4)바이트 배열을 가지고 만드는 생성자: new String(byte [ ])
+5)바이트 배열과 인코딩을 이용해서 만드는 생성자: new String(byte [ ], String encType)
+
+2.주요 메소드
+char charAt(index idx): idx 번째 문자를 리턴
+int length(): 문자열의 개수를 리턴
+
+byte [] getBytes(): 문자열을 바이트 배열로 리턴
+byte [] getBytes(String encType): 문자열을 인코딩 방식에 맞는 바이트 배열로 리턴
+
+3. + 연산자
+=>문자열이나 숫자 또는 boolean 과 사용하면 결합을 해줍니다.
+=>사용할 때 조심해야 합니다. String은 변할 수 없는 문자열을 저장하기 때문에 +로 결합하면 이전 내용을 복사해서 새로운 공간에서 작업을 합니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
